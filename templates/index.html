@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dev Seeker</title>
+    <link rel="stylesheet" href="https://matcha.mizu.sh/matcha.css"/>
+    <link rel="stylesheet" href="https://matcha.mizu.sh/matcha.utilities.css"/>
+    <link rel="stylesheet" href="https://matcha.mizu.sh/matcha.istanbul.css"/>
+    <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='matcha.css') }}"
+    />
+
+    <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="search-container">
+        <div class="intro">
+            <h1>Discover the solution from <span id="sources"></span></h1>
+        </div>
+        <form method="POST">
+            <input
+                    type="text"
+                    name="question"
+                    placeholder="What is your question?"
+                    required
+            />
+            <button type="submit">Find</button>
+        </form>
+        {% if question %}
+        <div class="results">
+            <h2>Search Results for: "{{ question }}"</h2>
+            <ul>
+                {% for result in results %}
+                <li>{{ result }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<script>
+    var typed = new Typed('#sources', {
+      strings: ['Stack Overflow', 'Superuser', 'ServerFault', '170+ sites'],
+      typeSpeed: 80,
+      backSpeed: 80,
+      loop: true,
+    });
+</script>
+</body>
+</html>

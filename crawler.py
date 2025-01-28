@@ -2,9 +2,9 @@ from abc import abstractmethod
 
 
 class Crawler():
-    def __init__(self, question: str):
-        self.question = question
+    def __init__(self, url: str):
+        self.url = url
 
     @abstractmethod
-    def crawl(self):
+    def crawl(self, question: str):
         pass
