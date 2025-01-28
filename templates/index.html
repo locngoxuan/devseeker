@@ -17,6 +17,25 @@
     />
 
     <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+    <script>
+        function discover() {
+            const question = document.getElementById("question").value;
+            const data = { question: question };
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/discover');
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    console.log(response);
+                } else {
+                    console.error('Request failed. Status:', xhr.status);
+                }
+            };
+            xhr.send(JSON.stringify(data));
+        }
+    </script>
 </head>
 <body>
 <div class="container">
@@ -26,12 +45,13 @@
         </div>
         <form method="POST">
             <input
+                    id="question"
                     type="text"
                     name="question"
                     placeholder="What is your question?"
                     required
             />
-            <button type="submit">Find</button>
+            <button type="button" onclick="discover()">Find</button>
         </form>
         {% if question %}
         <div class="results">
@@ -47,7 +67,7 @@
 </div>
 <script>
     var typed = new Typed('#sources', {
-      strings: ['Stack Overflow', 'Superuser', 'ServerFault', '170+ sites'],
+      strings: ['Stack Overflow', 'Superuser', 'Server Fault', '170+ sites'],
       typeSpeed: 80,
       backSpeed: 80,
       loop: true,

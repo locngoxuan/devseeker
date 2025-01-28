@@ -1,4 +1,5 @@
 import argparse
+import json
 
 from flask import Flask, render_template, request
 
@@ -11,7 +12,7 @@ crawlers = [
 ]
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET"])
 def index():
     question = None
     results = []
@@ -21,6 +22,12 @@ def index():
         for crawler in crawlers:
             crawler.crawl(question)
     return render_template("index.html", question=question, results=results)
+
+
+@app.route("/discover", methods=["POST"])
+def discover():
+    payload = json.loads(request.data)
+    return payload
 
 
 def main():
