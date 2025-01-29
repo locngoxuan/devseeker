@@ -14,21 +14,25 @@ crawlers = [
 
 @app.route("/", methods=["GET"])
 def index():
-    question = None
-    results = []
-    if request.method == "POST":
-        question = request.form.get("question")
-        results = [f"Result {i} for question {question}" for i in range(1, 6)]
-        for crawler in crawlers:
-            crawler.crawl(question)
-    return render_template("index.html", question=question, results=results)
+    return render_template("index.html")
 
 
 @app.route("/discover", methods=["POST"])
 def discover():
     payload = json.loads(request.data)
-    return payload
-
+    if 'question' not in payload:
+        return {
+            "code": 400,
+            "message": "question must not blank"
+        }
+    question = payload['question']
+    results = []
+    for crawler in crawlers:
+        rs = crawler.crawl(question)
+        if rs is None:
+            continue
+        results.extend(rs)
+    return results
 
 def main():
     parser = argparse.ArgumentParser(

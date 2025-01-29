@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://matcha.mizu.sh/matcha.css"/>
     <link rel="stylesheet" href="https://matcha.mizu.sh/matcha.utilities.css"/>
     <link rel="stylesheet" href="https://matcha.mizu.sh/matcha.istanbul.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link
             rel="stylesheet"
             href="{{ url_for('static', filename='style.css') }}"
@@ -20,30 +21,86 @@
     <script>
         function discover() {
             const question = document.getElementById("question").value;
+            if (question == "") {
+                return;
+            }
+            const spin_loading = document.getElementById("loading");
             const data = { question: question };
-
+            spin_loading.style.display = "inline-block";
             const xhr = new XMLHttpRequest();
             xhr.open('POST', '/discover');
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.onload = function() {
+                spin_loading.style.display = "none";
                 if (xhr.status === 200) {
                     const response = JSON.parse(xhr.responseText);
-                    console.log(response);
+                    appendDataToList(response);
                 } else {
                     console.error('Request failed. Status:', xhr.status);
                 }
             };
             xhr.send(JSON.stringify(data));
         }
+
+       function appendDataToList(data) {
+            var list = document.getElementById("data-list");
+            var result = document.getElementById("results");
+            if (data.length > 0) {
+                result.style.display = "block";
+            }
+
+            data.forEach(function (item) {
+                var li = document.createElement("li");
+                li.className = "item";
+
+                var headlineDiv = document.createElement("div");
+                headlineDiv.className = "item-headline";
+
+                var icon = document.createElement("img");
+                icon.src = item.icon; // Placeholder icon (replace with your own)
+                icon.alt = "Item Icon";
+
+                var title = document.createElement("h2");
+                title.className = "headline";
+                title.textContent = item.title;
+
+                headlineDiv.appendChild(icon);
+                headlineDiv.appendChild(title);
+
+
+                var descDiv = document.createElement("div");
+                descDiv.className = "item-desc";
+                var desc = document.createElement("span");
+                desc.className = "short-desc";
+                desc.textContent = item.shot_desc;
+
+                var viewMoreDiv = document.createElement("div");
+                viewMoreDiv.className = "wrapper";
+                var href = document.createElement("a");
+                href.href=item.link;
+                href.target="_blank";
+                href.innerHTML="<span>View detail</span>";
+                viewMoreDiv.appendChild(href);
+
+                descDiv.appendChild(desc);
+                descDiv.appendChild(viewMoreDiv);
+
+                li.appendChild(headlineDiv);
+                li.appendChild(descDiv);
+
+                list.appendChild(li);
+            });
+        }
     </script>
 </head>
 <body>
 <div class="container">
+    <div class="blank blank_left"></div>
     <div class="search-container">
         <div class="intro">
             <h1>Discover the solution from <span id="sources"></span></h1>
         </div>
-        <form method="POST">
+        <form>
             <input
                     id="question"
                     type="text"
@@ -51,23 +108,28 @@
                     placeholder="What is your question?"
                     required
             />
-            <button type="button" onclick="discover()">Find</button>
+            <button type="button" id="discover-btn" onclick="discover()" class="button">
+                <i id="loading" class="fa fa-circle-o-notch fa-spin spin-loading"></i> Find
+            </button>
         </form>
-        {% if question %}
-        <div class="results">
-            <h2>Search Results for: "{{ question }}"</h2>
-            <ul>
-                {% for result in results %}
-                <li>{{ result }}</li>
-                {% endfor %}
+        <div class="results" id="results">
+            <ul id="data-list" class="list">
+
             </ul>
         </div>
-        {% endif %}
     </div>
+    <div class="blank blank_right"></div>
 </div>
 <script>
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault(); // Prevent form submission
+        document.getElementById('discover-btn').click(); // Trigger button click
+      }
+    });
+
     var typed = new Typed('#sources', {
-      strings: ['Stack Overflow', 'Superuser', 'Server Fault', '170+ sites'],
+      strings: ['Stack Overflow', 'Super User', 'Server Fault', '170+ sites'],
       typeSpeed: 80,
       backSpeed: 80,
       loop: true,
