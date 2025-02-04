@@ -44,6 +44,7 @@
 
        function appendDataToList(data) {
             var list = document.getElementById("data-list");
+            list.innerHTML = "";
             var result = document.getElementById("results");
             if (data.length > 0) {
                 result.style.display = "block";
@@ -52,7 +53,6 @@
             data.forEach(function (item) {
                 var li = document.createElement("li");
                 li.className = "item";
-
                 var headlineDiv = document.createElement("div");
                 headlineDiv.className = "item-headline";
 
@@ -129,7 +129,7 @@
     });
 
     var typed = new Typed('#sources', {
-      strings: ['Stack Overflow', 'Super User', 'Server Fault', '170+ sites'],
+      strings: ['Dev.to', 'Stack Overflow', 'Super User', 'Server Fault', '170+ sites'],
       typeSpeed: 80,
       backSpeed: 80,
       loop: true,

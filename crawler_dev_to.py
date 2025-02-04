@@ -12,44 +12,38 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-from crawler import Crawler, bypass_captcha
+from crawler import Crawler, get_and_wait
 
 logger = logging.getLogger(__name__)
 
 
-class StackExchangeCrawler(Crawler, ABC):
+class DevToCrawler(Crawler, ABC):
     def __init__(self):
-        super().__init__("https://stackexchange.com")
+        super().__init__("https://dev.to")
 
     def crawl(self, question):
-        logger.info(f"run crawler for stack exchange")
+        logger.info(f"run crawler for dev.to")
         try:
             question = question.strip().replace(" ", "+")
-            url = f"{self.url}/search?q={question}"
-            content = bypass_captcha(url)
+            url = f"{self.url}/search?utf8=%E2%9C%93&q={question}"
+            content = get_and_wait(url)
             if content is None:
-                response = requests.get(url)
-                if response.status_code != 200:
-                    logger.error(f"failed to get data from stack exchange {response.status_code} {response.text}")
-                    return None
-                content = response.content.decode('utf-8')
+                return None
             soup = BeautifulSoup(content, 'html.parser')
-            result = soup.find('div', class_='search-results')
+            result = soup.find('div', class_='substories search-results-loaded')
             if result is None:
                 logger.warning(f"not found answer or is blocked by captcha")
                 return None
-            rows = result.findAll('div', 'question search-result')
+            rows = result.findAll('article', 'crayons-story')
             results = []
             for idx, row in enumerate(rows):
-                icon_div = row.find('div', class_='hot-question-site-icon')
-                icon_src = icon_div.find('img')['src']
+                icon_src = "https://media2.dev.to/dynamic/image/quality=100/https://dev-to-uploads.s3.amazonaws.com/uploads/logos/resized_logo_UQww2soKuUsjaOGNB38o.png"
 
                 summary = row.find('div', class_='summary')
-                result_link = row.find('div', class_='result-link')
+                result_link = row.find('div', class_='crayons-story__indention')
                 title = result_link.find('a').text
-                href = result_link.find('a')['href']
-                short_desc = row.find('div', class_='excerpt').text.strip()
-                short_desc = short_desc.rstrip().replace("\n", "")
+                href = f"https://dev.to/{result_link.find('a')['href']}"
+                short_desc = ""
                 results.append({
                     "icon": icon_src,
                     "title": title,

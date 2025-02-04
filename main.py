@@ -3,11 +3,13 @@ import json
 
 from flask import Flask, render_template, request
 
+from crawler_dev_to import DevToCrawler
 from crawler_stackexchange import StackExchangeCrawler
 
 app = Flask(__name__)
 
 crawlers = [
+    DevToCrawler(),
     StackExchangeCrawler(),
 ]
 
@@ -33,6 +35,7 @@ def discover():
             continue
         results.extend(rs)
     return results
+
 
 def main():
     parser = argparse.ArgumentParser(
