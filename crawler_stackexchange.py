@@ -27,12 +27,6 @@ class StackExchangeCrawler(Crawler, ABC):
             question = question.strip().replace(" ", "+")
             url = f"{self.url}/search?q={question}"
             content = bypass_captcha(url)
-            if content is None:
-                response = requests.get(url)
-                if response.status_code != 200:
-                    logger.error(f"failed to get data from stack exchange {response.status_code} {response.text}")
-                    return None
-                content = response.content.decode('utf-8')
             soup = BeautifulSoup(content, 'html.parser')
             result = soup.find('div', class_='search-results')
             if result is None:
